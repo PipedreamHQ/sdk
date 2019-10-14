@@ -11,7 +11,7 @@ const {
 } = process.env
 
 function Pipedream() {
-  const SDK_VERSION = "0.2.0" // TODO can release-it write to here as well? or bake it in from package.json
+  const SDK_VERSION = "0.2.1" // TODO can release-it write to here as well? or bake it in from package.json
   const PAYLOAD_VERSION = "1"
   let activeIntegration = null
   const secretKey = PD_SECRET_KEY

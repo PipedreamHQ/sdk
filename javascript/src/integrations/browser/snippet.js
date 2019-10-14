@@ -38,5 +38,5 @@
     first.parentNode.insertBefore(script, first)
   }
 
-  pdsdk.SNIPPET_VERSION = "0.2.0"
+  pdsdk.SNIPPET_VERSION = "0.2.1"
 })()

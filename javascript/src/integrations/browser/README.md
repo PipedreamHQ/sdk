@@ -10,7 +10,3 @@ pdsdk.sendEvent(API_KEY, {
   timestamp: +new Date(),
 })
 ```
-
-## TODO
-
-- capture console errors, etc.
