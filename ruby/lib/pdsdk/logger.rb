@@ -1,9 +1,9 @@
 require "logger"
 
-module Pipedream
+module Pdsdk
   class Logger < ::Logger
-    LOG_PREFIX = "** [Pipedream] ".freeze
-    PROGNAME = "pipedream"
+    LOG_PREFIX = "** [pdsdk] ".freeze
+    PROGNAME = "pdsdk"
 
     def initialize(*)
       super

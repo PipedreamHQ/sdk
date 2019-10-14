@@ -1,9 +1,9 @@
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
-require "pipedream/version"
+require "pdsdk/version"
 
 Gem::Specification.new do |g|
   g.name = "pipedream"
-  g.version = Pipedream::VERSION
+  g.version = Pdsdk::VERSION
   g.date = "2019-10-14"
   g.summary = g.description = "Pipedream SDK"
   g.authors = ["Pipedream Team"]

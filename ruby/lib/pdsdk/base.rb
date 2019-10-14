@@ -1,8 +1,8 @@
-require "pipedream/version"
-require "pipedream/logger"
+require "pdsdk/version"
+require "pdsdk/logger"
 require "json"
 
-module Pipedream
+module Pdsdk
   class Error < StandardError
   end
 
@@ -49,7 +49,7 @@ module Pipedream
       headers = {
         "user-agent" => "pipedream-sdk:ruby/1",
         "content-type" => "application/json",
-        "x-pd-sdk-version" => Pipedream::VERSION,
+        "x-pd-sdk-version" => Pdsdk::VERSION,
       }
       headers["x-pd-sig"] = "sha256=#{OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), @secret_key, payload)}" if @secret_key
       req = Net::HTTP::Post.new(uri.request_uri, headers)
@@ -71,7 +71,7 @@ module Pipedream
         git_ref = `git rev-parse HEAD`.strip rescue nil
         metadata[:git_ref] = git_ref if !git_ref.blank?
       end
-      metadata[:pdsdk_version] = Pipedream::VERSION
+      metadata[:pdsdk_version] = Pdsdk::VERSION
       metadata[:started_at] = Time.now.to_f
       metadata[:name] = ENV["PD_METADATA_NAME"] || `hostname`.strip
       metadata.merge!(merge_data) # XXX deep?
@@ -80,4 +80,4 @@ module Pipedream
   end
 end
 
-Pipedream.bootstrap!
+Pdsdk.bootstrap!

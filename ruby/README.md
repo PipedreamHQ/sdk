@@ -1,12 +1,12 @@
 # sdk:ruby
 
 ```ruby
-require "pipedream"
+require "pdsdk"
 
-Pipedream.send_event(API_KEY, hello: "world")
+Pdsdk.send_event(API_KEY, hello: "world")
 
 # with exports
-Pipedream.send_event(API_KEY, {
+Pdsdk.send_event(API_KEY, {
   hello: "world"
 }, exports: {
   event: { hello: "world!" },
@@ -23,7 +23,7 @@ Setup: https://help.github.com/en/articles/configuring-rubygems-for-use-with-git
 To cut new version (TODO automate this):
 
 ```
-# update lib/pipedream/version.rb to $VERSION
-gem build pipedream.gemspec
-gem push --key github --host https://rubygems.pkg.github.com/PipedreamHQ pipedream-$VERSION.gem
+# update lib/pdsdk/version.rb to $VERSION
+gem build pdsdk.gemspec
+gem push pdsdk-$VERSION.gem
 ```
