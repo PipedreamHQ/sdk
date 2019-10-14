@@ -1,0 +1,24 @@
+{
+  "name": "sdk",
+  "husky": {
+    "hooks": {
+      "pre-commit": "./pre-commit.sh && git add -A"
+    }
+  },
+  "version": "0.2.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PipedreamHQ/sdk.git"
+  },
+  "author": "Pipedream Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PipedreamHQ/sdk/issues"
+  },
+  "homepage": "https://github.com/PipedreamHQ/sdk#readme",
+  "devDependencies": {
+    "husky": "^2.4.0"
+  },
+  "dependencies": {}
+}
