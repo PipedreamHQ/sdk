@@ -2,9 +2,6 @@
   "name": "@pipedreamhq/sdk",
   "version": "0.2.1",
   "description": "Pipedream SDK",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "main": "src/index.js",
   "browserslist": "> 0.25%, not dead",
   "browserify": {
