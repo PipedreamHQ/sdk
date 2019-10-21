@@ -1,13 +1,14 @@
 # sdk:python
 
-```python
-from pipedream import sdk as pd
+## Usage
 
-pd.send_event(API_KEY, {'hello': 'world'})
+```python
+from pipedream_sdk import send_event
+
+send_event({'hello': 'world'})
 
 # with exports
-pd.send_event(
-    API_KEY,
+send_event(
     {'hello': 'world'},
     exports={
         'event': {'hello': 'world!'},
@@ -16,9 +17,23 @@ pd.send_event(
 )
 ```
 
-If you do not provide an `event` export it will be set to the `raw_event`
-(first argument).  `event` and `raw_event` MUST be a dict or the SDK request
-will be invalid.
+Importing `send_event` directly will create an instance of `PipedreamSdkClient`
+behind the scenes, configured through environment variables. You may also create
+the client explicitly:
+
+```python
+from pipedream_sdk import PipedreamSdkClient
+
+pd = PipedreamSdkClient(
+    api_key=YOUR_API_KEY,
+    sdk_protocol='https',
+)
+pd.send_event({'hello': 'world'})
+```
+
+This may be useful in cases where multiple events need to be pushed to Pipedream
+using differing API keys, or where some events should be sent as over HTTPS while
+others should be sent without SSL.
 
 ## Development
 
