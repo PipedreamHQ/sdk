@@ -58,7 +58,7 @@ module Pdsdk
       resp = http.request(req)
       logger.info "received response: #{resp}" # TODO remove
       # XXX check we get { "success": "ok" } back?
-      { 'code' resp.code.to_i, 'data' JSON.parse(resp.body) }
+      { 'code' => resp.code.to_i, 'data' => JSON.parse(resp.body) }
     end
 
     def load_metadata(metadata_path, merge_data)
