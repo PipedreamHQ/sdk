@@ -49,6 +49,7 @@ module Pdsdk
       headers = {
         "user-agent" => "pipedream-sdk:ruby/1",
         "content-type" => "application/json",
+        "accept" => "application/json",
         "x-pd-sdk-version" => Pdsdk::VERSION,
       }
       headers["x-pd-sig"] = "sha256=#{OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), @secret_key, payload)}" if @secret_key
@@ -57,7 +58,7 @@ module Pdsdk
       resp = http.request(req)
       logger.info "received response: #{resp}" # TODO remove
       # XXX check we get { "success": "ok" } back?
-      resp.code.to_i
+      { code: resp.code.to_i, data: JSON.parse(resp.body) }
     end
 
     def load_metadata(metadata_path, merge_data)
