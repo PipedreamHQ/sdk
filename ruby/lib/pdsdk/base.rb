@@ -43,7 +43,7 @@ module Pdsdk
       use_ssl = uri.scheme == "https"
       @https ||= {}
       # TODO ensure reconnects if client disconnects
-      @https[_uri] = http ||= Net::HTTP.start(uri.host, uri.port, use_ssl: use_ssl) # XXX assume https
+      http = @https[_uri] ||= Net::HTTP.start(uri.host, uri.port, { use_ssl: use_ssl, open_timeout: 1 }) # XXX assume https
       logger.info "going to send event: #{event}" # TODO remove
       payload = event.to_json
       headers = {
