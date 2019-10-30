@@ -1,6 +1,7 @@
 require "pdsdk/version"
 require "pdsdk/logger"
 require "json"
+require 'concurrent'
 
 module Pdsdk
   class Error < StandardError
@@ -29,7 +30,7 @@ module Pdsdk
     end
 
     # XXX self.send_message for string and becomes { message } ?
-    def send_event(api_key, raw_event, opts={})
+    def send_event(api_key, raw_event, opts={}, include_response = false)
       hostname = ENV["PD_SDK_HOST"] || "sdk.m.pipedream.net"
       proto = ENV["PD_SDK_PROTO"] || "https"
       event = opts[:exports] || {}
@@ -41,8 +42,10 @@ module Pdsdk
       end
       uri = URI(_uri)
       use_ssl = uri.scheme == "https"
-      # TODO connection pooling
-      http = Net::HTTP.start(uri.host, uri.port, { use_ssl: use_ssl, open_timeout: 1 }) # XXX assume https
+      # TODO clean up old connections
+      # TODO ensure reconnects if client disconnects
+      @https ||= Concurrent::ThreadLocalVar.new { {} }
+      http = @https.value[_uri] ||= Net::HTTP.start(uri.host, uri.port, { use_ssl: use_ssl, open_timeout: 1 })
       logger.info "going to send event: #{event}" # TODO remove
       payload = event.to_json
       headers = {
@@ -56,7 +59,11 @@ module Pdsdk
       req.body = payload
       resp = http.request(req)
       logger.info "received response: #{resp}" # TODO remove
-      { 'code' => resp.code.to_i, 'body' => resp.body }
+      if include_response
+        { 'code' => resp.code.to_i, 'body' => resp.body }
+      else
+        { 'code' => resp.code.to_i }
+      end
     end
 
     def load_metadata(metadata_path, merge_data)
