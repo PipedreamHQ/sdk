@@ -54,6 +54,7 @@ module Pdsdk
       @https ||= Concurrent::ThreadLocalVar.new { {} }
       log(api_key, "Conditional create http, #{@https.value[_uri]}")
       http = @https.value[_uri] ||= Net::HTTP.start(uri.host, uri.port, { use_ssl: use_ssl, open_timeout: 1 })
+      log(api_key, "Current http, #{@https.value[_uri]}")
       log(api_key, "going to send event: #{event}")
       logger.info "going to send event: #{event}" # TODO remove
       log(api_key, "creating payload from event.json")
