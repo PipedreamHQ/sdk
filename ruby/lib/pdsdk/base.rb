@@ -51,10 +51,16 @@ module Pdsdk
       # TODO clean up old connections
       # TODO ensure reconnects if client disconnects
       log(api_key, "Conditional create @https, #{@https}")
-      @https ||= Concurrent::ThreadLocalVar.new { {} }
-      log(api_key, "Conditional create http, #{@https.value[_uri]}")
-      http = @https.value[_uri] ||= Net::HTTP.start(uri.host, uri.port, { use_ssl: use_ssl, open_timeout: 1 })
-      log(api_key, "Current http, #{@https.value[_uri]}")
+      #@https ||= Concurrent::ThreadLocalVar.new { {} }
+      #log(api_key, "Conditional create http, #{@https.value[_uri]}")
+      #http = @https.value[_uri] ||= Net::HTTP.start(uri.host, uri.port, { use_ssl: use_ssl, open_timeout: 1 })
+      #log(api_key, "Current http, #{@https.value[_uri]}")
+
+
+      @https ||= {}
+      @https[_uri] = http ||= Net::HTTP.start(uri.host, uri.port, use_ssl: use_ssl) # XXX assume https
+
+
       log(api_key, "going to send event: #{event}")
       logger.info "going to send event: #{event}" # TODO remove
       log(api_key, "creating payload from event.json")
