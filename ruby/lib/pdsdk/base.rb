@@ -44,9 +44,8 @@ module Pdsdk
       use_ssl = uri.scheme == "https"
       # TODO clean up old connections
       # TODO ensure reconnects if client disconnects
-      @https ||= Concurrent::ThreadLocalVar.new { {} }
-      http = @https.value[_uri] ||= Net::HTTP.start(uri.host, uri.port, { use_ssl: use_ssl, open_timeout: 1 })
-      logger.info "going to send event: #{event}" # TODO remove
+      @http_connection ||= Concurrent::ThreadLocalVar.new { Net::HTTP.start(uri.host, uri.port, use_ssl: use_ssl, open_timeout: 1) }
+      logger.info "going to send event: #{event} to #{api_key}" # TODO remove
       payload = event.to_json
       headers = {
         "user-agent" => "pipedream-sdk:ruby/1",
@@ -57,7 +56,7 @@ module Pdsdk
       headers["x-pd-sig"] = "sha256=#{OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), @secret_key, payload)}" if @secret_key
       req = Net::HTTP::Post.new(uri.request_uri, headers)
       req.body = payload
-      resp = http.request(req)
+      resp = @http_connection.value.request(req)
       logger.info "received response: #{resp}" # TODO remove
       if include_response
         { 'code' => resp.code.to_i, 'body' => resp.body }
