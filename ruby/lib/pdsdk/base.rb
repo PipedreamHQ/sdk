@@ -50,18 +50,9 @@ module Pdsdk
       use_ssl = uri.scheme == "https"
       # TODO clean up old connections
       # TODO ensure reconnects if client disconnects
-      #log(api_key, "Conditional create @https, #{@https}")
-      #@https ||= Concurrent::ThreadLocalVar.new { {} }
-      #log(api_key, "Conditional create http, #{@https.value[_uri]}")
-      #http = @https.value[_uri] ||= Net::HTTP.start(uri.host, uri.port, { use_ssl: use_ssl, open_timeout: 1 })
-      #log(api_key, "Current http, #{@https.value[_uri]}")
-
-
-      #@https ||= {}
-      #@https[_uri] = http ||= Net::HTTP.start(uri.host, uri.port, use_ssl: use_ssl) # XXX assume https
-      log(api_key, "Conditional create @http (#{@http})")
-      @http ||= Net::HTTP.start(uri.host, uri.port, use_ssl: use_ssl) # XXX assume https
-      log(api_key, "Current @http (#{@http})")
+      log(api_key, "Conditional create @http_connection, #{@http_connection}")
+      @http_connection ||= Concurrent::ThreadLocalVar.new { Net::HTTP.start(uri.host, uri.port, use_ssl: use_ssl, open_timeout: 1) }
+      log(api_key, "Current @http_connection, #{@http_connection}")
 
 
       log(api_key, "going to send event: #{event}")
@@ -81,7 +72,7 @@ module Pdsdk
       log(api_key, "setting request.body from payload")
       req.body = payload
       log(api_key, "sending request")
-      resp = http.request(req)
+      resp = @http_connection.value.request(req)
       log(api_key, "received response: #{resp}")
       logger.info "received response: #{resp}" # TODO remove
       if include_response
