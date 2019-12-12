@@ -30,7 +30,7 @@ module Pdsdk
     end
 
     def log(api_key, message)
-      puts "[#{Thraed.current.object_id}] #{Time.now}  (#{api_key}) #{message}"
+      puts "[#{Thread.current.object_id}] #{Time.now}  (#{api_key}) #{message}"
     end
 
     # XXX self.send_message for string and becomes { message } ?
