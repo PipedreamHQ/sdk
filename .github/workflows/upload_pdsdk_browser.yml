@@ -16,4 +16,7 @@ jobs:
       - env:
           AWS_ACCESS_KEY_ID: '${{ secrets.CIRCLE_USER_AWS_ACCESS_KEY_ID }}'
           AWS_SECRET_ACCESS_KEY: '${{ secrets.CIRCLE_USER_AWS_SECRET_ACCESS_KEY }}'
-        run: aws s3 sync javascript/dist s3://sdk.pipedream.net/
+          CLOUDFRONT_DISTRIBUTION_ID: '${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}'
+        run: |
+          aws s3 sync javascript/dist s3://sdk.pipedream.net/
+          aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths /*
