@@ -5,7 +5,7 @@ const axios = require("axios")
 const integrations = require("./integrations")
 
 const {
-  PD_SECRET_KEY,
+  // PD_SECRET_KEY,
   PD_SDK_HOST = "sdk.m.pipedream.net",
   PD_SDK_PROTO = "https",
 } = process.env
@@ -14,9 +14,7 @@ function Pipedream() {
   const SDK_VERSION = "0.3.0" // TODO can release-it write to here as well? or bake it in from package.json
   const PAYLOAD_VERSION = "1"
   let activeIntegration = null
-  const secretKey = PD_SECRET_KEY
-
-  if (!secretKey) console.warn("no $PD_SECRET_KEY detected, will not sign payloads")
+  // const secretKey = PD_SECRET_KEY
 
   // TODO have node use a persistent HTTP client
   this.sendEvent = async function(apiKey, raw_event, opts) {
@@ -36,10 +34,10 @@ function Pipedream() {
     }
     if (opts.client) headers["x-pd-sdk-client"] = opts.client
     if (activeIntegration) headers["x-pd-sdk-integration"] = activeIntegration
-    if (secretKey) {
-      const sig = crypto.createHmac("sha256", secretKey).update(payload).digest("hex")
-      headers["x-pd-sig"] = `sha256=${sig}`
-    }
+    // if (secretKey) {
+    //   const sig = crypto.createHmac("sha256", secretKey).update(payload).digest("hex")
+    //   headers["x-pd-sig"] = `sha256=${sig}`
+    // }
     const config = {
       url: uri,
       method: "post",
