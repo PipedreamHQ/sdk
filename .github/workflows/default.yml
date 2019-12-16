@@ -1,0 +1,18 @@
+name: upload_pdsdk_browser
+'on':
+  push:
+    branches:
+      - master
+    paths:
+      - javascript/dist/*
+jobs:
+  default:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+        env:
+          AWS_ACCESS_KEY_ID: '${{ secrets.CIRCLE_USER_AWS_ACCESS_KEY_ID }}'
+          AWS_SECRET_ACCESS_KEY: '${{ secrets.CIRCLE_USER_AWS_SECRET_ACCESS_KEY }}'
+      - run: aws s3 sync javascript/dist s3://sdk.pipedream.net/
