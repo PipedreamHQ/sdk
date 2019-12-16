@@ -1,3 +1,4 @@
+# TODO maybe build just in CI, gitignore dist, and create artifacts and link to those instead
 name: upload_pdsdk_browser
 'on':
   push:
