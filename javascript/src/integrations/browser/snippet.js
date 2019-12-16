@@ -38,5 +38,5 @@
     first.parentNode.insertBefore(script, first)
   }
 
-  pdsdk.SNIPPET_VERSION = "0.3.1"
+  pdsdk.SNIPPET_VERSION = "0.3.2" // TODO can release-it write to here as well? or bake it in from package.json
 })()
