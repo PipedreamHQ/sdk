@@ -44,7 +44,7 @@ function Pipedream() {
       headers,
       data: payload,
     }
-    await axios.request(config)
+    return await axios.request(config)
   }
 
   // determine active integration
