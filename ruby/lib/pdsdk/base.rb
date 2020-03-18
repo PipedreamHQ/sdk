@@ -1,7 +1,6 @@
 require "pdsdk/version"
 require "pdsdk/logger"
 require "json"
-require 'concurrent'
 
 module Pdsdk
   class Error < StandardError
@@ -27,41 +26,48 @@ module Pdsdk
       if !@secret_key
         logger.warn "no $#{ENV_SECRET_KEY_KEY} detected, will not sign payloads"
       end
+
+      @hostname = ENV["PD_SDK_HOST"] || "sdk.m.pipedream.net"
+      @proto = ENV["PD_SDK_PROTO"] || "https"
+    end
+
+    def sync_send_event(api_key, raw_event, opts={}, include_response=false)
+      event = opts[:exports] || {}
+      event[:raw_event] = raw_event
+      # logger.info "going to send event: #{event} to #{api_key}"
+      if opts[:deployment]
+        _uri = "#{@proto}://#{@hostname}/pipelines/#{api_key}/deployments/#{opts[:deployment]}/events"
+      else
+        _uri = "#{@proto}://#{@hostname}/pipelines/#{api_key}/events"
+      end
+      uri = URI(_uri)
+      Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https", open_timeout: 1) do |http|
+        payload = event.to_json
+        headers = {
+          "user-agent" => "pipedream-sdk:ruby/1",
+          "content-type" => "application/json",
+          "accept" => "application/json",
+          "x-pd-sdk-version" => Pdsdk::VERSION,
+        }
+        headers["x-pd-sig"] = "sha256=#{OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), @secret_key, payload)}" if @secret_key
+        req = Net::HTTP::Post.new(uri.request_uri, headers)
+        req.body = payload
+        resp = http.request(req)
+        # logger.info "received response: #{resp}"
+        if include_response
+          { 'code' => resp.code.to_i, 'body' => resp.body }
+        else
+          { 'code' => resp.code.to_i }
+        end
+      end
     end
 
     # XXX self.send_message for string and becomes { message } ?
-    def send_event(api_key, raw_event, opts={}, include_response = false)
-      hostname = ENV["PD_SDK_HOST"] || "sdk.m.pipedream.net"
-      proto = ENV["PD_SDK_PROTO"] || "https"
-      event = opts[:exports] || {}
-      event[:raw_event] = raw_event
-      if opts[:deployment]
-        _uri = "#{proto}://#{hostname}/pipelines/#{api_key}/deployments/#{opts[:deployment]}/events"
-      else
-        _uri = "#{proto}://#{hostname}/pipelines/#{api_key}/events"
-      end
-      uri = URI(_uri)
-      use_ssl = uri.scheme == "https"
-      # TODO clean up old connections
-      # TODO ensure reconnects if client disconnects
-      @http_connection ||= Concurrent::ThreadLocalVar.new { Net::HTTP.start(uri.host, uri.port, use_ssl: use_ssl, open_timeout: 1) }
-      logger.info "going to send event: #{event} to #{api_key}" # TODO remove
-      payload = event.to_json
-      headers = {
-        "user-agent" => "pipedream-sdk:ruby/1",
-        "content-type" => "application/json",
-        "accept" => "application/json",
-        "x-pd-sdk-version" => Pdsdk::VERSION,
-      }
-      headers["x-pd-sig"] = "sha256=#{OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), @secret_key, payload)}" if @secret_key
-      req = Net::HTTP::Post.new(uri.request_uri, headers)
-      req.body = payload
-      resp = @http_connection.value.request(req)
-      logger.info "received response: #{resp}" # TODO remove
-      if include_response
-        { 'code' => resp.code.to_i, 'body' => resp.body }
-      else
-        { 'code' => resp.code.to_i }
+    def send_event(api_key, raw_event, opts={})
+      # TODO make a proper worker with queue in separate thread rather than making new every time
+      # ... mostly so we can connect http client once
+      Thread.new do
+        sync_send_event(api_key, raw_event, opts)
       end
     end
 
