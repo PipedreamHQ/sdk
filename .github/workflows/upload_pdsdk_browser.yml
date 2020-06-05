@@ -1,11 +1,12 @@
 # TODO maybe build just in CI, gitignore dist, and create artifacts and link to those instead
 name: upload_pdsdk_browser
-'on':
+on:
   push:
     branches:
       - master
     paths:
       - javascript/dist/*
+      - .github/workflows/upload_pdsdk_browser.yml
 jobs:
   default:
     runs-on: ubuntu-latest
@@ -19,4 +20,4 @@ jobs:
           CLOUDFRONT_DISTRIBUTION_ID: '${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}'
         run: |
           aws s3 sync javascript/dist s3://sdk.pipedream.net/
-          aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths /*
+          aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths '/*'
