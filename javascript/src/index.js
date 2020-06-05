@@ -1,4 +1,5 @@
-const crypto = require("crypto") // TODO browser...
+// TODO currently not used... this adds a lot to browser bundle
+// const crypto = require("crypto")
 
 const axios = require("axios")
 
