@@ -1,1 +1,8 @@
+# Node.js
 node_modules
+
+# Python
+*.py[cod]
+*.egg-info/
+.eggs/
+.tox/
