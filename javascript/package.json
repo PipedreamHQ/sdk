@@ -41,7 +41,7 @@
     "@babel/preset-env": "^7.4.5",
     "babelify": "^10.0.0",
     "browserify": "^16.2.3",
-    "release-it": "^12.4.1",
+    "release-it": "^15.6.0",
     "uglify-js": "^3.6.0"
   }
 }
